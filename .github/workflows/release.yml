@@ -1,0 +1,62 @@
+name: Release
+
+# Релиз запускается пушем тега вида v0.1.0.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build plugin
+        run: ./gradlew buildPlugin -PpluginVersion=${{ steps.ver.outputs.version }} --console=plain
+
+      - name: Create GitHub Release with zip asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.ver.outputs.version }}" \
+            "build/distributions/branch-in-project-view-${{ steps.ver.outputs.version }}.zip" \
+            --title "v${{ steps.ver.outputs.version }}" --generate-notes
+
+      # Обновляем updatePlugins.xml и pluginVersion → пользователи получают авто-апдейт по raw-ссылке.
+      - name: Update plugin repository descriptor
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          REPO: ${{ github.repository }}
+        run: |
+          URL="https://github.com/${REPO}/releases/download/v${VERSION}/branch-in-project-view-${VERSION}.zip"
+          {
+            echo '<plugins>'
+            echo "  <plugin id=\"dev.gelo.branch-in-project-view\" url=\"${URL}\" version=\"${VERSION}\">"
+            echo '    <name>Branch in Project View</name>'
+            echo '    <idea-version since-build="243"/>'
+            echo '  </plugin>'
+            echo '</plugins>'
+          } > updatePlugins.xml
+          sed -i "s/^pluginVersion=.*/pluginVersion=${VERSION}/" gradle.properties
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updatePlugins.xml gradle.properties
+          git commit -m "release: v${VERSION} [skip ci]" || echo "nothing to commit"
+          git push origin main

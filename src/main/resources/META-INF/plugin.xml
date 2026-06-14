@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>dev.gelo.branch-in-project-view</id>
+    <name>Branch in Project View</name>
+    <vendor url="https://github.com/akaGelo">akaGelo</vendor>
+
+    <description><![CDATA[
+        Показывает текущую git-ветку рядом с корневыми узлами проекта/репозиториев в Project View.
+        Ветки, отличные от main/master/develop, подсвечиваются жирным оранжевым.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectViewNodeDecorator implementation="dev.gelo.branchview.BranchNodeDecorator"/>
+    </extensions>
+
+    <projectListeners>
+        <listener class="dev.gelo.branchview.BranchRepoChangeListener"
+                  topic="git4idea.repo.GitRepositoryChangeListener"/>
+    </projectListeners>
+</idea-plugin>

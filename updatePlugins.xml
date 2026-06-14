@@ -1,0 +1,6 @@
+<plugins>
+  <plugin id="dev.gelo.branch-in-project-view" url="https://github.com/akaGelo/branch-in-project-view/releases/download/v0.1.0/branch-in-project-view-0.1.0.zip" version="0.1.0">
+    <name>Branch in Project View</name>
+    <idea-version since-build="243"/>
+  </plugin>
+</plugins>
