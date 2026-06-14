@@ -40,6 +40,7 @@ jobs:
             --title "v${{ steps.ver.outputs.version }}" --generate-notes
 
       # Обновляем updatePlugins.xml и pluginVersion → пользователи получают авто-апдейт по raw-ссылке.
+      # <description>/<vendor> нужны для превью в Marketplace ДО установки (IDE берёт их отсюда).
       - name: Update plugin repository descriptor
         env:
           VERSION: ${{ steps.ver.outputs.version }}
@@ -50,7 +51,13 @@ jobs:
             echo '<plugins>'
             echo "  <plugin id=\"dev.gelo.branch-in-project-view\" url=\"${URL}\" version=\"${VERSION}\">"
             echo '    <name>Branch in Project View</name>'
-            echo '    <idea-version since-build="243"/>'
+            echo '    <vendor url="https://github.com/akaGelo">akaGelo</vendor>'
+            echo '    <description><![CDATA['
+            echo 'Показывает текущую git-ветку рядом с корнем проекта и каждым git-репозиторием в Project View.'
+            echo 'Ветки кроме <b>main</b>/<b>master</b>/<b>develop</b> подсвечиваются жирным оранжевым — сразу видно,'
+            echo 'что вы не на основной ветке. Метка обновляется при checkout. Без вызовов git-процесса: читает кэш git4idea.'
+            echo '    ]]></description>'
+            echo "    <idea-version since-build=\"243\"/>"
             echo '  </plugin>'
             echo '</plugins>'
           } > updatePlugins.xml

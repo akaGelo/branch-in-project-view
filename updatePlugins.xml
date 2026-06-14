@@ -1,6 +1,12 @@
 <plugins>
   <plugin id="dev.gelo.branch-in-project-view" url="https://github.com/akaGelo/branch-in-project-view/releases/download/v0.1.0/branch-in-project-view-0.1.0.zip" version="0.1.0">
     <name>Branch in Project View</name>
+    <vendor url="https://github.com/akaGelo">akaGelo</vendor>
+    <description><![CDATA[
+Показывает текущую git-ветку рядом с корнем проекта и каждым git-репозиторием в Project View.
+Ветки кроме <b>main</b>/<b>master</b>/<b>develop</b> подсвечиваются жирным оранжевым — сразу видно,
+что вы не на основной ветке. Метка обновляется при checkout. Без вызовов git-процесса: читает кэш git4idea.
+    ]]></description>
     <idea-version since-build="243"/>
   </plugin>
 </plugins>
